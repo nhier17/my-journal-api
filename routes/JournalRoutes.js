@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { authenticateUser  } = require('../middleware/authentication');
 
 const {
     newJournalEntry,
@@ -10,11 +11,11 @@ const {
 } = require('../controllers/JournalEntryController')
 
 router.route('/')
-    .post(newJournalEntry)
-    .get(getJournalEntries)
+    .post(authenticateUser, newJournalEntry)
+    .get(authenticateUser, getJournalEntries)
  router.route('/:id ')
-            .get(getJournalEntryById)
-            .patch(updateJournalEntry)  
-            .delete(deleteJournalEntry)
+            .get(authenticateUser, getJournalEntryById)
+            .patch(authenticateUser, updateJournalEntry)  
+            .delete(authenticateUser, deleteJournalEntry)
 
  module.exports = router;
