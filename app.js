@@ -10,11 +10,12 @@ const connectDB = require('./db/connect');
 
 //routers
 const authRouter = require('./routes/AuthRoutes');
-
+const journalRouter = require('./routes/JournalRoutes');
 
 
 app.use(express.json());
 app.use('/api/auth', authRouter);
+app.use('/api/journal', journalRouter);
 
 app.get('/', (req,res) => {
     res.send('Hello, World!');

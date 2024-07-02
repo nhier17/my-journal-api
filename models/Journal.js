@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 //define journal entry schema
 const JournalEntrySchema = new mongoose.Schema({
-    author: {
+    user: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'User',
