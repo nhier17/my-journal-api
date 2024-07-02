@@ -8,14 +8,17 @@ const {
     getJournalEntryById,
     updateJournalEntry,
     deleteJournalEntry,
+    getJournalSummary
 } = require('../controllers/JournalEntryController')
 
 router.route('/')
     .post(authenticateUser, newJournalEntry)
     .get(authenticateUser, getJournalEntries)
- router.route('/:id ')
+ router.route('/:id')
             .get(authenticateUser, getJournalEntryById)
             .patch(authenticateUser, updateJournalEntry)  
-            .delete(authenticateUser, deleteJournalEntry)
+            .delete(authenticateUser, deleteJournalEntry)    
+
+router.route('/summary').get(authenticateUser, getJournalSummary)
 
  module.exports = router;

@@ -12,7 +12,6 @@ const newJournalEntry =  async (req, res) => {
         title,
         content,
         category,
-        date,
       });
       await journalEntry.save();
       res.status(StatusCodes.CREATED).json(journalEntry);
@@ -25,7 +24,20 @@ const newJournalEntry =  async (req, res) => {
 const getJournalEntries = async (req, res) => {
     try {
         const user = req.user.userId;
-        const journals = await JournalEntry.find({ user });
+        const { category, search } = req.query;
+        let queryObject = { user };
+        if (category) {
+            queryObject.category = category;
+        }
+    
+        if (search) {
+            queryObject.$or = [
+                { title: { $regex: new RegExp(search, 'i') } },
+                { content: { $regex: new RegExp(search, 'i') } }
+            ];
+        }
+
+        const journals = await JournalEntry.find(queryObject);
         res.status(StatusCodes.OK).json(journals);
     } catch (error) {
         
@@ -38,7 +50,7 @@ const getJournalEntryById = async (req, res) => {
       const { id } = req.params
       const journalEntry = await JournalEntry.findById(id);
 
-      if (!journalEntry || journalEntry.user.toString() !== req.user._id.toString()) {
+      if (!journalEntry) {
         throw new CustomError.BadRequestError('Journal entry not found');
     }
       res.status(StatusCodes.OK).json(journalEntry);
@@ -59,10 +71,10 @@ const updateJournalEntry = async (req, res) => {
         category,
         }, { new: true }
       );
-      if (!updatedJournalEntry) {
+      if (!journalEntry) {
         throw new CustomError.BadRequestError('Journal entry not found');
       }
-      res.status(StatusCodes.OK).json(updatedJournalEntry);
+      res.status(StatusCodes.OK).json(journalEntry);
     } catch (error) {
         console.error('Error updating journal', error);
     }
@@ -86,10 +98,54 @@ const deleteJournalEntry = async (req, res) => {
     }
 };
 
+//get journal summary
+const getJournalSummary = async (req, res) => {
+    try {
+      const { period } = req.query;
+      const user = req.user.userId;
+      
+      let startDate = new Date();
+      switch (period) {
+        case 'daily':
+            startDate.setHours(0, 0, 0, 0); // Start of the day
+            break;
+        case 'weekly':
+            startDate.setDate(startDate.getDate() - startDate.getDay()); // Start of the week (Sunday)
+            startDate.setHours(0, 0, 0, 0);
+            break;
+        case 'monthly':
+            startDate.setDate(1); // Start of the month
+            startDate.setHours(0, 0, 0, 0);
+            break;
+        default:
+            return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid period' });
+    }
+
+    const journals = await JournalEntry.find({
+        user,
+        date: { $gte: startDate }
+    });
+     
+    
+    const summary = journals.map(journal => ({
+        id: journal._id,
+        title: journal.title,
+        category: journal.category,
+        date: journal.date
+    }));
+
+    res.status(StatusCodes.OK).json(summary);
+      
+    } catch (error) {
+        console.error(error);
+    }
+};
+
 module.exports = {
     newJournalEntry,
     getJournalEntries,
     getJournalEntryById,
     updateJournalEntry,
     deleteJournalEntry,
+    getJournalSummary
 };
