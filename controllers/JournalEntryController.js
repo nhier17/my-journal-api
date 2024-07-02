@@ -1,6 +1,7 @@
 const JournalEntry = require('../models/Journal');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
+const mongoose = require('mongoose');
 
 
 //create a new Journal entry
@@ -101,43 +102,44 @@ const deleteJournalEntry = async (req, res) => {
 //get journal summary
 const getJournalSummary = async (req, res) => {
     try {
-      const { period } = req.query;
-      const user = req.user.userId;
-      
-      let startDate = new Date();
-      switch (period) {
-        case 'daily':
-            startDate.setHours(0, 0, 0, 0); // Start of the day
-            break;
-        case 'weekly':
-            startDate.setDate(startDate.getDate() - startDate.getDay()); // Start of the week (Sunday)
-            startDate.setHours(0, 0, 0, 0);
-            break;
-        case 'monthly':
-            startDate.setDate(1); // Start of the month
-            startDate.setHours(0, 0, 0, 0);
-            break;
-        default:
-            return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Invalid period' });
-    }
+        const user = req.user.userId;
+        const { period } = req.query;
 
-    const journals = await JournalEntry.find({
-        user,
-        date: { $gte: startDate }
-    });
-     
-    
-    const summary = journals.map(journal => ({
-        id: journal._id,
-        title: journal.title,
-        category: journal.category,
-        date: journal.date
-    }));
+        let startDate;
+        const endDate = new Date();
 
-    res.status(StatusCodes.OK).json(summary);
-      
+        switch (period) {
+            case 'daily':
+                startDate = new Date();
+                startDate.setDate(endDate.getDate() - 1);
+                break;
+            case 'weekly':
+                startDate = new Date();
+                startDate.setDate(endDate.getDate() - 7);
+                break;
+            case 'monthly':
+                startDate = new Date();
+                startDate.setMonth(endDate.getMonth() - 1);
+                break;
+            default:
+                startDate = new Date(0);
+                break;
+        }
+
+        const summary = await JournalEntry.aggregate([
+            { $match: { user: new mongoose.Types.ObjectId(user), date: { $gte: startDate, $lte: endDate } } },
+            {
+                $group: {
+                    _id: '$category',
+                    count: { $sum: 1 },
+                },
+            },
+        ]);
+
+        res.status(StatusCodes.OK).json(summary);
     } catch (error) {
-        console.error(error);
+        console.error('Error fetching journal summary', error);
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: 'Error fetching journal summary' });
     }
 };
 
