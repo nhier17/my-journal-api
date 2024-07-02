@@ -39,7 +39,7 @@ UserSchema.pre('save', async function () {
 });
 //compare the password
 UserSchema.methods.comparePassword = async function (candidatePassword) {
-    const isMatch = await bcrypt.comparePassword(candidatePassword, this.password);
+    const isMatch = await bcrypt.compare(candidatePassword, this.password);
     return isMatch;
 };
 

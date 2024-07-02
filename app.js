@@ -4,6 +4,10 @@ require('express-async-errors');
 //express
 const express = require('express');
 const app = express();
+//rest of packages
+const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
+const cors = require('cors');
 
 // Connect to MongoDB
 const connectDB = require('./db/connect');
@@ -12,14 +16,21 @@ const connectDB = require('./db/connect');
 const authRouter = require('./routes/AuthRoutes');
 const journalRouter = require('./routes/JournalRoutes');
 
+//middleware
+const notFoundMiddleware = require('./middleware/not-found');
+const errorHandlerMiddleware = require('./middleware/error-handler');
 
 app.use(express.json());
+app.use(helmet());
+app.use(cors());
+app.use(cookieParser(process.env.JWT_SECRET));
+
 app.use('/api/auth', authRouter);
 app.use('/api/journal', journalRouter);
 
-app.get('/', (req,res) => {
-    res.send('Hello, World!');
-})
+app.use(notFoundMiddleware);
+app.use(errorHandlerMiddleware);
+
 
 
 const port = process.env.PORT || 5000;;
