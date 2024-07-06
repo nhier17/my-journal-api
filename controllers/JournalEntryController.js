@@ -38,7 +38,7 @@ const getJournalEntries = async (req, res) => {
             ];
         }
 
-        const journals = await JournalEntry.find(queryObject);
+        const journals = await JournalEntry.find(queryObject).populate('user', 'name');
         res.status(StatusCodes.OK).json(journals);
     } catch (error) {
         
