@@ -29,6 +29,7 @@ const UserSchema = new mongoose.Schema({
         enum: ['admin', 'user'],
         default: 'user',
       }, 
+      profilePicture: String,
 });
 
 //harsh the password

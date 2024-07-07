@@ -58,5 +58,33 @@ const logout = async (req, res) => {
     });
     res.status(StatusCodes.OK).json({ msg: 'user logged out!' });
   };
+    //update user profile pic
+    const updateUserProfile = async (req, res) => {
+      const { userId } = req.body;
+      const profilePicture = req.file;
   
-module.exports = { register, login, logout };
+      try {
+          if(!userId) {
+              throw new CustomError.BadRequestError('Please provide user id');
+          }
+          let user = await User.findById(userId);
+          if (!user) {
+              throw new CustomError.NotFoundError('User not found');
+          }
+  
+          if(!profilePicture) {
+              throw new CustomError.BadRequestError('Please provide a profile picture');
+          } 
+          const profilePath = '/uploads/' + profilePicture.filename;
+          user.profilePicture = profilePath;
+           await user.save();         
+              
+          res.status(StatusCodes.OK).json({ user });
+      } catch (error) {
+          res.status(StatusCodes.BAD_REQUEST).json({
+              error: error.message
+          });
+      }
+    };
+  
+module.exports = { register, login, logout, updateUserProfile };
