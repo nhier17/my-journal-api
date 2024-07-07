@@ -105,6 +105,9 @@ const getJournalSummary = async (req, res) => {
         const user = req.user.userId;
         const { period } = req.query;
 
+        console.log('User ID:', user); // Add this line for debugging
+        console.log('Period:', period); 
+
         let startDate;
         const endDate = new Date();
 
@@ -135,6 +138,8 @@ const getJournalSummary = async (req, res) => {
                 },
             },
         ]);
+
+        console.log('Summary:', summary);
 
         res.status(StatusCodes.OK).json(summary);
     } catch (error) {
