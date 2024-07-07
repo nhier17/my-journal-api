@@ -86,5 +86,9 @@ const logout = async (req, res) => {
           });
       }
     };
+//show current user
+const showCurrentUser = async (req, res) => {
+  res.status(StatusCodes.OK).json({ user: req.user });
+};
   
-module.exports = { register, login, logout, updateUserProfile };
+module.exports = { register, login, logout, updateUserProfile, showCurrentUser };
