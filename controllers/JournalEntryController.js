@@ -136,8 +136,6 @@ const getJournalSummary = async (req, res) => {
             },
         ]);
 
-        console.log('Summary:', summary);
-
         res.status(StatusCodes.OK).json(summary);
     } catch (error) {
         console.error('Error fetching journal summary', error);
