@@ -87,7 +87,7 @@ const deleteJournalEntry = async (req, res) => {
       const { id } = req.params;
       const journalEntry = await JournalEntry.findByIdAndDelete(id);
      
-      if (!journalEntry || journalEntry.user.toString() !== req.user._id.toString()) {
+      if (!journalEntry) {
         throw new CustomError.BadRequestError('Journal entry not found');
     }
 
