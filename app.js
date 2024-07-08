@@ -15,6 +15,7 @@ const connectDB = require('./db/connect');
 //routers
 const authRouter = require('./routes/AuthRoutes');
 const journalRouter = require('./routes/JournalRoutes');
+const userRouter = require('./routes/UserRoutes');
 
 //middleware
 const notFoundMiddleware = require('./middleware/not-found');
@@ -28,6 +29,7 @@ app.use('/uploads',express.static('uploads'));
 
 app.use('/api/auth', authRouter);
 app.use('/api/journal', journalRouter);
+app.use('/api/user', userRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

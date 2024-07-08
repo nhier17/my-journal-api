@@ -13,13 +13,12 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const { register, login, logout, updateUserProfile, showCurrentUser } = require('../controllers/AuthController');
+const { register, login, logout, updateUserProfile } = require('../controllers/AuthController');
 
 
 router.post('/register', register);
 router.post('/login', login);
 router.get('/logout', logout);
-router.get('/showUser', showCurrentUser);
 router.post('/profile', upload.single('profilePicture'),updateUserProfile)
 
 module.exports = router;
