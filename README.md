@@ -183,21 +183,6 @@
 #### Journal Routes in Postman
 Make sure you login a user first before testing the routes in postman since they are protected
 
-#### Create Product
-
-- [] create user property on req.body and set it equal to userId (req.user)
-- [] pass req.body into Product.create
-- [] send back the product
-
-#### Remaining Controllers (apar
-
-- [] getAllProducts
-- [] getSingleProduct
-- [] updateProduct
-- [] deleteProduct
-- [] typical CRUD, utilize (task or job) project
-- [] remember we check already for role 'admin'
-
 
 #### Security Packages
 
